@@ -39,7 +39,35 @@ export const getDecks = async (req: Request, res: Response) => {
             return res.status(404).json({error: 'Este usuario no tiene mazos creados'})
         }
 
-        res.json(decks)
+        const deckIds = decks.map(deck => deck._id)
+
+        const cardCounts = await Card.aggregate([
+            { $match: { deck: { $in: deckIds } } },
+            {
+                $group: {
+                    _id: '$deck',
+                    total: { $sum: 1 },
+                    learned: {
+                        $sum: { $cond: [{ $eq: ['$learned', true] }, 1, 0] }
+                    }
+                }
+            }
+        ])
+
+        const countsMap = new Map(
+            cardCounts.map(c => [c._id.toString(), { total: c.total, learned: c.learned }])
+        )
+
+        const decksConConteo = decks.map(deck => {
+            const counts = countsMap.get(deck._id.toString()) ?? { total: 0, learned: 0 }
+            return {
+                ...deck.toObject(),
+                totalCards: counts.total,
+                totalLearneds: counts.learned
+            }
+        })
+
+        res.json(decksConConteo)
     } catch (error) {
         res.status(500).json({error: 'Hubo un error'})
     }

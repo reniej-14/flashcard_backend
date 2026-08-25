@@ -11,7 +11,7 @@ export const generateQuestions = async (text: string): Promise<GeneratedQuestion
     const prompt = `
 Eres un asistente que crea tarjetas de estudio.
 
-A partir del siguiente texto genera preguntas y respuestas.
+A partir del siguiente texto genera preguntas y respuestas en idioma español.
 
 Reglas:
 
@@ -36,7 +36,7 @@ ${text}
     const { data } = await axios.post(
         "https://openrouter.ai/api/v1/chat/completions",
         {
-            model: "openai/gpt-oss-20b:free",
+            model: "cohere/north-mini-code:free",
             messages: [
                 {
                     role: "user",

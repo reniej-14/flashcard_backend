@@ -9,14 +9,14 @@ export const handleInputErrors = (req : Request, res : Response, next : NextFunc
     next()
 }
 
-
 export const validatePdf = (req: Request, res: Response, next: NextFunction) => {
     if (!req.file) {
-        return res.status(400).json({error: 'Debes subir un archivo PDF'})
+        return res.status(400).json({error: 'Debes subir un archivo PDF o de texto'})
     }
 
-    if (req.file.mimetype !== 'application/pdf') {
+    /* if (req.file.mimetype !== 'application/pdf') {
+        console.log(req.file.mimetype)
         return res.status(400).json({error: 'El archivo debe ser un PDF'})
-    }
+    } */
     next()
 }
