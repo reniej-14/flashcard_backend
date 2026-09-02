@@ -73,6 +73,40 @@ export const getDecks = async (req: Request, res: Response) => {
     }
 }
 
+export const getDeckById = async (req: Request, res: Response) => {
+    try {
+        const { deckId } = req.params
+        const deck = await Deck.findById(deckId)
+
+        if (!deck) {
+            return res.status(404).json({error: 'Mazo no encontrado'})
+        }
+
+        const [counts] = await Card.aggregate([
+            { $match: { deck: deck._id } },
+            {
+                $group: {
+                    _id: '$deck',
+                    total: { $sum: 1 },
+                    learned: {
+                        $sum: { $cond: [{ $eq: ['$learned', true] }, 1, 0] }
+                    }
+                }
+            }
+        ])
+
+        const deckConConteo = {
+            ...deck.toObject(),
+            totalCards: counts?.total ?? 0,
+            totalLearneds: counts?.learned ?? 0
+        }
+
+        res.json(deckConConteo)
+    } catch (error) {
+        res.status(500).json({error: 'Hubo un error al objetener el mazo por id'})
+    }
+}
+
 export const getCards = async (req: Request, res: Response) => {
     try {
         const { deckId } = req.params

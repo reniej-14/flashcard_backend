@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
-import { createDecks, deleteDeck, getCards, getDecks, updateCard,  } from "./handlers";
+import { createDecks, deleteDeck, getCards, getDeckById, getDecks, updateCard,  } from "./handlers";
 import { handleInputErrors, validatePdf } from "./middleware/validation";
 import { upload } from "./config/multer";
 
@@ -23,6 +23,9 @@ router.post('/decks',
 
 router.get('/decks/:visitorId',
     getDecks
+)
+router.get('/deck/:deckId', 
+    getDeckById
 )
 
 router.get('/cards/:deckId',
